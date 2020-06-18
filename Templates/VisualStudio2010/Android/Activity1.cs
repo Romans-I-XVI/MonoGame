@@ -15,12 +15,36 @@ namespace $safeprojectname$
         , ConfigurationChanges = ConfigChanges.Orientation | ConfigChanges.Keyboard | ConfigChanges.KeyboardHidden | ConfigChanges.ScreenSize | ConfigChanges.ScreenLayout)]
     public class Activity1 : Microsoft.Xna.Framework.AndroidGameActivity
     {
+        private static Game1 Game = null;
+
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
-            var g = new Game1();
-            SetContentView((View)g.Services.GetService(typeof(View)));
-            g.Run();
+
+            View view;
+            if (Game == null)
+            {
+                Game = new Game1();
+                view = (View)Game.Services.GetService(typeof(View));
+                Game.Run();
+            }
+            else
+            {
+                view = (View)Game.Services.GetService(typeof(View));
+                ViewGroup parent = (ViewGroup)view.Parent;
+                if (parent != null)
+                {
+                    parent.RemoveView(view);
+                }
+            }
+
+            SetContentView(view);
+        }
+
+        protected override void OnDestroy()
+        {
+            Game = null;
+            base.OnDestroy();
         }
     }
 }
